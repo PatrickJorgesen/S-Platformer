@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class PlayerHealth : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
             ApplyDamage();
+        else if (collision.gameObject.CompareTag("Hazard"))
+        {
+            Dead();
+        }
     }
     void OnCollisionStay2D(Collision2D collision)
     {
@@ -43,6 +48,13 @@ public class PlayerHealth : MonoBehaviour
             Debug.Log("Player health: " + (playerHealth + 1));
         }
         else
-            Destroy(gameObject);
+        {
+            Dead();
+        }
+    }
+    void Dead()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
     }
 }
