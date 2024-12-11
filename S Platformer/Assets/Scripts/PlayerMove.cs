@@ -35,19 +35,19 @@ public class PlayerMove : MonoBehaviour
         {
             if (mainVector.x < moveCap && mainVector.x > -moveCap)
             {
-                mainVector.x += moveSpeed * moveDir.x;
+                mainVector.x += moveSpeed * moveDir.x * Time.deltaTime;
             }
             if (mainVector.x > 0)
-                mainVector.x -= groundDeceleration;
+                mainVector.x -= groundDeceleration * Time.deltaTime;
             else if (mainVector.x < 0)
-                mainVector.x += groundDeceleration;
+                mainVector.x += groundDeceleration * Time.deltaTime;
         }
         else if(isGrounded == true)
         {
             if (mainVector.x > 0)
-                mainVector.x -= groundDeceleration + slideDropOff;
+                mainVector.x -= (groundDeceleration + slideDropOff) * Time.deltaTime;
             else if (mainVector.x < 0)
-                mainVector.x += groundDeceleration + slideDropOff;
+                mainVector.x += (groundDeceleration + slideDropOff) * Time.deltaTime;
         }
         isGrounded = rb.IsTouching(groundFilter);
         if (isGrounded)
@@ -86,7 +86,7 @@ public class PlayerMove : MonoBehaviour
             if (isGrounded=true && moveDir.x != 0 && canSlide == true) // activates sliding
             {
                 sliding = true;
-                mainVector.x += startingSlideSpeed * moveDir.x;
+                mainVector.x += startingSlideSpeed * moveDir.x * Time.deltaTime;
                 canSlide = false;
             }
             rb.transform.localScale = new Vector3(rb.transform.localScale.x, 0.75f, rb.transform.localScale.z);

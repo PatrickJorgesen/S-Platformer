@@ -396,7 +396,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.04502427, y: 3.2763798, z: -10}
+  m_LocalPosition: {x: -0.045017418, y: 3.2763798, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -707,8 +707,8 @@ MonoBehaviour:
   m_LookaheadTime: 0.45
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 1
-  m_XDamping: 1
-  m_YDamping: 1
+  m_XDamping: 2
+  m_YDamping: 2
   m_ZDamping: 1
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
@@ -1147,7 +1147,6 @@ GameObject:
   - component: {fileID: 1676774792}
   - component: {fileID: 1676774787}
   - component: {fileID: 1676774793}
-  - component: {fileID: 1676774794}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1167,13 +1166,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef45dcc3eb82c484ba593931e6bc0c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 0.3
+  moveSpeed: 6
   moveCap: 15
   jumpForce: 30
-  groundDeceleration: 0.2
+  groundDeceleration: 3
   doubleJumpAmount: 1
-  startingSlideSpeed: 15
-  slideDropOff: 0.2
+  startingSlideSpeed: 2500
+  slideDropOff: 2
   groundFilter:
     useTriggers: 0
     useLayerMask: 1
@@ -1364,34 +1363,6 @@ MonoBehaviour:
   damageAmount: 1
   damageTimer: 1
   playerHealth: 5
---- !u!114 &1676774794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1676774786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3459d7746ddbfc47957d3c2f140b9f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallFilter:
-    useTriggers: 0
-    useLayerMask: 0
-    useDepth: 0
-    useOutsideDepth: 0
-    useNormalAngle: 0
-    useOutsideNormalAngle: 0
-    layerMask:
-      m_Bits: 64
-    minDepth: 0
-    maxDepth: 0
-    minNormalAngle: 0
-    maxNormalAngle: 0
-  isWalled: 0
-  rb: {fileID: 0}
-  _MainMove: {fileID: 0}
 --- !u!1 &1723378128
 GameObject:
   m_ObjectHideFlags: 0
