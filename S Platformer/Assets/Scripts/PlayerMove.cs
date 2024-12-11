@@ -7,7 +7,9 @@ using UnityEngine.InputSystem;
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
+    [SerializeField] float moveCap = 30;
     [SerializeField] float jumpForce = 5f;
+    [SerializeField] float groundDeceleration = 5;
     [SerializeField] int doubleJumpAmount = 2;
     [SerializeField] float startingSlideSpeed = 1;
     [SerializeField] float slideDropOff = 0.01f;
@@ -19,6 +21,7 @@ public class PlayerMove : MonoBehaviour
     bool isGrounded;
     bool isCrouching = false;
     Vector2 moveDir;
+    Vector2 mainVector;
     Rigidbody2D rb;
 
     private void Start()
@@ -27,14 +30,17 @@ public class PlayerMove : MonoBehaviour
     }
     private void Update()
     {
-        if (sliding == false)
+        rb.velocity = mainVector;
+        if (sliding == false && isGrounded == true)
         {
-            rb.velocity = new Vector2(moveDir.x * moveSpeed, rb.velocity.y);
+            if (mainVector.x < moveCap)
+            {
+                mainVector += moveSpeed * moveDir;
+            }
             curentSlidingSpeed = startingSlideSpeed;
         }
         else
         {
-            rb.velocity = new Vector2(moveDir.x * curentSlidingSpeed, rb.velocity.y);
             if(curentSlidingSpeed > 0)
                 curentSlidingSpeed -= slideDropOff;
         }
