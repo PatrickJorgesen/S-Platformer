@@ -8,9 +8,9 @@ public class PlayerMove : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
     [SerializeField] float moveCap = 30;
+    [SerializeField] int airJumpAmount = 2;
     [SerializeField] float jumpForce = 5f;
     [SerializeField] float groundDeceleration = 5;
-    [SerializeField] int doubleJumpAmount = 2;
     [SerializeField] float startingSlideSpeed = 1;
     [SerializeField] float slideDropOff = 0.01f;
     [SerializeField] float groundPoundSpeed = 3f;
@@ -54,7 +54,7 @@ public class PlayerMove : MonoBehaviour
         isGrounded = rb.IsTouching(groundFilter);
         if (isGrounded)
         {
-            jumpCount = doubleJumpAmount;
+            jumpCount = airJumpAmount;
             if (groundPound == true)
             {
                 mainVector.y = 0;
@@ -82,7 +82,11 @@ public class PlayerMove : MonoBehaviour
     void OnJump()
     {
         canSlide = true;
-        if (jumpCount > 0)
+        if (isGrounded)
+        {
+            Jump();
+        }
+        else if (jumpCount > 0)
         {
             Jump();
             jumpCount--;

@@ -11100,9 +11100,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 12
   moveCap: 15
+  airJumpAmount: 0
   jumpForce: 30
   groundDeceleration: 3
-  doubleJumpAmount: 1
   startingSlideSpeed: 10
   slideDropOff: 2
   groundPoundSpeed: 20
