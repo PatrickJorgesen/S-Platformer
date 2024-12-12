@@ -13,11 +13,13 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] int doubleJumpAmount = 2;
     [SerializeField] float startingSlideSpeed = 1;
     [SerializeField] float slideDropOff = 0.01f;
+    [SerializeField] float groundPoundSpeed = 3f;
     [SerializeField] ContactFilter2D groundFilter;
 
     int jumpCount = 0;
     bool sliding = false;
     bool canSlide = true;
+    bool groundPound = false;
     bool isGrounded;
     bool isCrouching = false;
     Vector2 moveDir;
@@ -51,7 +53,14 @@ public class PlayerMove : MonoBehaviour
         }
         isGrounded = rb.IsTouching(groundFilter);
         if (isGrounded)
+        {
             jumpCount = doubleJumpAmount;
+            if (groundPound == true)
+            {
+                mainVector.y = 0;
+                groundPound = false;
+            }
+        }
         Debug.Log(mainVector.x);
     }
     void OnMove(InputValue value)
@@ -83,11 +92,16 @@ public class PlayerMove : MonoBehaviour
     {
         if (!isCrouching)
         { 
-            if (isGrounded=true && moveDir.x != 0 && canSlide == true) // activates sliding
+            if (isGrounded == true && moveDir.x != 0 && canSlide == true) // activates sliding
             {
                 sliding = true;
-                mainVector.x += startingSlideSpeed * moveDir.x * Time.deltaTime;
+                mainVector.x += startingSlideSpeed * moveDir.x;
                 canSlide = false;
+            }
+            if(isGrounded == false && groundPound == false)
+            {
+                groundPound = true;
+                mainVector.y = groundPoundSpeed;
             }
             rb.transform.localScale = new Vector3(rb.transform.localScale.x, 0.75f, rb.transform.localScale.z);
             isCrouching = true;
