@@ -10,11 +10,14 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float moveCap = 30;
     [SerializeField] int airJumpAmount = 2;
     [SerializeField] float jumpForce = 5f;
+    [SerializeField] float jumpBufferTime = 0.2f;
     [SerializeField] float groundDeceleration = 5;
     [SerializeField] float startingSlideSpeed = 1;
     [SerializeField] float slideDropOff = 0.01f;
     [SerializeField] float groundPoundSpeed = 3f;
     [SerializeField] ContactFilter2D groundFilter;
+    [SerializeField] GameObject downRay;
+    [SerializeField] GameObject forwardRay;
 
     int jumpCount = 0;
     bool sliding = false;
@@ -22,8 +25,11 @@ public class PlayerMove : MonoBehaviour
     bool groundPound = false;
     bool isGrounded;
     bool isCrouching = false;
+    bool jumpBuffer = false;
     Vector2 moveDir;
     Vector2 mainVector;
+    RaycastHit2D groundRay;
+
     Rigidbody2D rb;
 
     private void Start()
@@ -33,7 +39,9 @@ public class PlayerMove : MonoBehaviour
     private void Update()
     {
         rb.velocity = new Vector2(mainVector.x, rb.velocity.y);
-        if (sliding == false && isGrounded == true)
+        isGrounded = rb.IsTouching(groundFilter);
+        //Walking and sliding
+        if (sliding == false && isGrounded == true) //Player is walking
         {
             if (mainVector.x < moveCap && mainVector.x > -moveCap)
             {
@@ -44,24 +52,36 @@ public class PlayerMove : MonoBehaviour
             else if (mainVector.x < 0)
                 mainVector.x += groundDeceleration * Time.deltaTime;
         }
-        else if(isGrounded == true)
+        else if (isGrounded == true) //player is sliding
         {
             if (mainVector.x > 0)
                 mainVector.x -= (groundDeceleration + slideDropOff) * Time.deltaTime;
             else if (mainVector.x < 0)
                 mainVector.x += (groundDeceleration + slideDropOff) * Time.deltaTime;
         }
-        isGrounded = rb.IsTouching(groundFilter);
-        if (isGrounded)
+
+        //misc
+        if (isGrounded) 
         {
             jumpCount = airJumpAmount;
-            if (groundPound == true)
+            if (groundPound == true) // Groundpund rest
             {
                 mainVector.y = 0;
                 groundPound = false;
             }
+            if (jumpBuffer == true) // Activates the buffer jump
+            {
+                jumpBuffer = false;
+                Jump();
+            }
         }
+        // The Debug section
         Debug.Log(mainVector.x);
+        Debug.DrawRay(downRay.transform.position, -Vector2.up * groundRay.distance, Color.magenta);
+    }
+    private void FixedUpdate()
+    {
+        RaycastHit2D groundRay = Physics2D.Raycast(downRay.transform.position, -Vector2.up);
     }
     void OnMove(InputValue value)
     {
@@ -85,6 +105,10 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded)
         {
             Jump();
+        }
+        else if (groundRay.distance < jumpBufferTime) //Buffers the players jump
+        {
+            jumpBuffer = true;
         }
         else if (jumpCount > 0)
         {
