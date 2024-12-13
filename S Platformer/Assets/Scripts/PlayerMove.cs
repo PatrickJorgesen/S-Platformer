@@ -10,25 +10,26 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float moveCap = 30;
     [SerializeField] int airJumpAmount = 2;
     [SerializeField] float jumpForce = 5f;
-    [SerializeField] float jumpBufferTime = 0.2f;
+    [SerializeField] float bufferTime = 0.2f;
     [SerializeField] float groundDeceleration = 5;
     [SerializeField] float startingSlideSpeed = 1;
     [SerializeField] float slideDropOff = 0.01f;
     [SerializeField] float groundPoundSpeed = 3f;
-    [SerializeField] ContactFilter2D groundFilter;
     [SerializeField] GameObject downRay;
     [SerializeField] GameObject forwardRay;
+    [SerializeField] ContactFilter2D groundFilter;
 
     int jumpCount = 0;
+    bool slidbuffer = false;
     bool sliding = false;
     bool canSlide = true;
-    bool groundPound = false;
     bool isGrounded;
     bool isCrouching = false;
     bool jumpBuffer = false;
     Vector2 moveDir;
     Vector2 mainVector;
     RaycastHit2D groundRay;
+    RaycastHit2D wallRay;
 
     Rigidbody2D rb;
 
@@ -64,25 +65,34 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded) 
         {
             jumpCount = airJumpAmount;
-            if (groundPound == true) // Groundpund rest
-            {
-                mainVector.y = 0;
-                groundPound = false;
-            }
             if (jumpBuffer == true) // Activates the buffer jump
             {
                 jumpBuffer = false;
                 Jump();
             }
+            if (slidbuffer == true)
+            {
+                slidbuffer = false;
+                Slide();
+            }
         }
-        // The Debug section
-        Debug.Log(mainVector.x);
-        if(groundRay.collider != null)
-            Debug.DrawRay(downRay.transform.position, -Vector2.up * groundRay.distance, Color.magenta);
+        // The Debug sectio
+        //Debug.Log(mainVector.x);
     }
     private void FixedUpdate()
     {
-        RaycastHit2D groundRay = Physics2D.Raycast(downRay.transform.position, -Vector2.up);
+        groundRay = Physics2D.Raycast(downRay.transform.position, -Vector2.up);
+        wallRay = Physics2D.Raycast(forwardRay.transform.position, forwardRay.transform.forward);
+        Debug.Log(wallRay.transform.gameObject.tag);
+        // Debug visualization
+        if (groundRay.collider != null)
+        {
+            Debug.DrawRay(downRay.transform.position, -Vector2.up * groundRay.distance, Color.magenta);
+        }
+        if (wallRay.collider != null)
+        {
+            Debug.DrawRay(forwardRay.transform.position, forwardRay.transform.forward * wallRay.distance, Color.magenta);
+        }
     }
     void OnMove(InputValue value)
     {
@@ -96,8 +106,9 @@ public class PlayerMove : MonoBehaviour
             rb.transform.localScale = new Vector3(-1, rb.transform.localScale.y, 1);
         }
     }
-    void OnCrouch()
+    void OnCrouch(InputValue Value)
     {
+        isCrouching = Value.isPressed;
         Crouch();
     }
     void OnJump()
@@ -107,7 +118,7 @@ public class PlayerMove : MonoBehaviour
         {
             Jump();
         }
-        else if (groundRay.distance < jumpBufferTime && groundRay.collider != null) //Buffers the players jump
+        else if (groundRay.distance < bufferTime) //Buffers the players jump
         {
             jumpBuffer = true;
         }
@@ -119,29 +130,33 @@ public class PlayerMove : MonoBehaviour
     }
     void Crouch()
     {
-        if (!isCrouching)
-        { 
+        if (isCrouching == true)
+        {
             if (isGrounded == true && moveDir.x != 0 && canSlide == true) // activates sliding
             {
-                sliding = true;
-                mainVector.x += startingSlideSpeed * moveDir.x;
-                canSlide = false;
+                Slide();
             }
-            if(isGrounded == false && groundPound == false)
+            else if (groundRay.distance < bufferTime && moveDir.x != 0 && canSlide == true) //Buffers the players slide
             {
-                groundPound = true;
-                mainVector.y = groundPoundSpeed;
+                slidbuffer = true;
             }
             rb.transform.localScale = new Vector3(rb.transform.localScale.x, 0.75f, rb.transform.localScale.z);
             isCrouching = true;
         }
-        else
+        else if (isCrouching == false)
         {
             rb.transform.localScale = new Vector3(rb.transform.localScale.x, 1f, rb.transform.localScale.z);
-            isCrouching = false;
-            if(sliding == true)
+            if (isCrouching == true)
+                isCrouching = false;
+            if (sliding == true)
                 sliding = false;
         }
+    }
+    void Slide()
+    {
+        sliding = true;
+        mainVector.x += startingSlideSpeed * moveDir.x;
+        canSlide = false;
     }
     public void Jump()
     {
