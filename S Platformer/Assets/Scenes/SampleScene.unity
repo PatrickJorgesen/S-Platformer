@@ -11133,7 +11133,7 @@ MonoBehaviour:
   moveCap: 15
   airJumpAmount: 0
   jumpForce: 30
-  jumpBufferTime: 0.1
+  jumpBufferTime: 10
   groundDeceleration: 3
   startingSlideSpeed: 10
   slideDropOff: 2

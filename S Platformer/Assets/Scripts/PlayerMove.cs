@@ -77,7 +77,8 @@ public class PlayerMove : MonoBehaviour
         }
         // The Debug section
         Debug.Log(mainVector.x);
-        Debug.DrawRay(downRay.transform.position, -Vector2.up * groundRay.distance, Color.magenta);
+        if(groundRay.collider != null)
+            Debug.DrawRay(downRay.transform.position, -Vector2.up * groundRay.distance, Color.magenta);
     }
     private void FixedUpdate()
     {
@@ -106,7 +107,7 @@ public class PlayerMove : MonoBehaviour
         {
             Jump();
         }
-        else if (groundRay.distance < jumpBufferTime) //Buffers the players jump
+        else if (groundRay.distance < jumpBufferTime && groundRay.collider != null) //Buffers the players jump
         {
             jumpBuffer = true;
         }
