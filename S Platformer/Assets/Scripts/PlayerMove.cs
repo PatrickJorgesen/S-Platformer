@@ -15,6 +15,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float startingSlideSpeed = 1;
     [SerializeField] float slideDropOff = 0.01f;
     [SerializeField] float groundPoundSpeed = 3f;
+    [SerializeField] float wallJumpDistance = 1f;
     [SerializeField] GameObject downRay;
     [SerializeField] GameObject forwardRay;
     [SerializeField] ContactFilter2D groundFilter;
@@ -82,16 +83,21 @@ public class PlayerMove : MonoBehaviour
     private void FixedUpdate()
     {
         groundRay = Physics2D.Raycast(downRay.transform.position, -Vector2.up);
-        wallRay = Physics2D.Raycast(forwardRay.transform.position, forwardRay.transform.forward);
-        Debug.Log(wallRay.transform.gameObject.tag);
-        // Debug visualization
+
+        Vector2 direction = new Vector2(transform.localScale.x, 0); // Determine direction
+        wallRay = Physics2D.Raycast(forwardRay.transform.position, direction);
+
+        // Debug visualization for groundRay
         if (groundRay.collider != null)
         {
             Debug.DrawRay(downRay.transform.position, -Vector2.up * groundRay.distance, Color.magenta);
         }
+
+        // Debug visualization for wallRay
         if (wallRay.collider != null)
         {
-            Debug.DrawRay(forwardRay.transform.position, forwardRay.transform.forward * wallRay.distance, Color.magenta);
+            Debug.DrawRay(forwardRay.transform.position, direction * wallRay.distance, Color.magenta);
+            Debug.Log("WallRay Distance: " + wallRay.distance);
         }
     }
     void OnMove(InputValue value)
@@ -158,7 +164,7 @@ public class PlayerMove : MonoBehaviour
         mainVector.x += startingSlideSpeed * moveDir.x;
         canSlide = false;
     }
-    public void Jump()
+    void Jump()
     {
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
     }
