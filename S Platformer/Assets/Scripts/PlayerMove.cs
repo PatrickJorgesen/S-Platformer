@@ -14,7 +14,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float groundDeceleration = 5;
     [SerializeField] float startingSlideSpeed = 1;
     [SerializeField] float slideDropOff = 0.01f;
-    [SerializeField] float groundPoundSpeed = 3f;
     [SerializeField] float wallJumpDistance = 1f;
     [SerializeField] GameObject downRay;
     [SerializeField] GameObject forwardRay;
@@ -96,8 +95,7 @@ public class PlayerMove : MonoBehaviour
         // Debug visualization for wallRay
         if (wallRay.collider != null)
         {
-            Debug.DrawRay(forwardRay.transform.position, direction * wallRay.distance, Color.magenta);
-            Debug.Log("WallRay Distance: " + wallRay.distance);
+            Debug.DrawRay(forwardRay.transform.position, direction * wallJumpDistance, Color.magenta);
         }
     }
     void OnMove(InputValue value)
@@ -122,6 +120,11 @@ public class PlayerMove : MonoBehaviour
         canSlide = true;
         if (isGrounded)
         {
+            Jump();
+        }
+        else if (wallRay.distance < wallJumpDistance && groundRay.distance > bufferTime)
+        {
+            mainVector.x = -mainVector.x;
             Jump();
         }
         else if (groundRay.distance < bufferTime) //Buffers the players jump
